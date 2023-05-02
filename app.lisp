@@ -102,9 +102,6 @@
 	:|市区町村（読み）| (table-city-yomi dao)
 	:|町域（読み）| (table-town-yomi dao)))
 
-(defroute "/zipcode/:zipcode" (params :method :POST)
-  (jojo:to-json (dao->plist (mito:find-dao 'table :zipcode (asc :zipcode params)))))
-
 
 (defroute "/zipcode/:zipcode" (params :method :POST)
   (with-protect-to-json (dao->plist (mito:find-dao 'table :zipcode (asc :zipcode params)))))
