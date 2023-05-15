@@ -1,6 +1,7 @@
 # Yubin
 
 ## Usage
+Web API to search an address from zipcode.  
 For instance,
 ```common lisp
 (dex:post "http://localhost:5000/zipcode/640941")
