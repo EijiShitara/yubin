@@ -6,7 +6,8 @@
 	       "ningle"
 	       "clack"
 	       "fare-csv"
-	       "mito")
+	       "mito"
+	       "dexador")
   :components ((:module "src"
 		:components
 		((:file "main")
