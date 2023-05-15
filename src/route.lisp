@@ -22,6 +22,12 @@
   `(handler-case
        `(200 (:content-type "application/json")
              (,(jojo:to-json (progn ,@body))))
+     (DBI.ERROR:DBI-DATABASE-ERROR (e) 
+       `(400 (:content-type "application/json")
+             (,(jojo:to-json (list :|error| (format nil "Invalid Parameter for Zip Code"))))))
+     (SB-PCL::NO-APPLICABLE-METHOD-ERROR (e)
+       `(404 (:content-type "application/json")
+             (,(jojo:to-json (list :|error| (format nil "Address Not Found"))))))
      (error (e)
        `(500 (:content-type "application/json")
              (,(jojo:to-json (list :|error| (format nil "~A" e))))))))
