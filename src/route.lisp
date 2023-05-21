@@ -22,12 +22,12 @@
   `(handler-case
        `(200 (:content-type "application/json")
              (,(jojo:to-json (progn ,@body))))
-     (DBI.ERROR:DBI-DATABASE-ERROR (e) 
+     (invalid-parameters (e) 
        `(400 (:content-type "application/json")
-             (,(jojo:to-json (list :|error| (format nil "Invalid Parameter for Zip Code"))))))
-     (SB-PCL::NO-APPLICABLE-METHOD-ERROR (e)
+	     (,(jojo:to-json (list :|error| (format nil "Invalid Parameters: ~A" (message-of e)))))))
+     (not-found (e)
        `(404 (:content-type "application/json")
-             (,(jojo:to-json (list :|error| (format nil "Address Not Found"))))))
+	     (,(jojo:to-json (list :|error| (format nil "Not Found"))))))
      (error (e)
        `(500 (:content-type "application/json")
              (,(jojo:to-json (list :|error| (format nil "~A" e))))))))
@@ -36,4 +36,14 @@
   (cdr (assoc key alist :test #'string=)))
 
 (defroute "/zipcode/:zipcode" (params :method :POST)
-  (with-protect-to-json (dao->plist (mito:find-dao 'table :zipcode (asc :zipcode params)))))
+  (with-protect-to-json (let ((zipcode (asc :zipcode params)))
+			   (when (or (cl-ppcre:scan "[^0-9]" zipcode)
+				    (< (length zipcode) 6)
+				    (> (length zipcode) 7) ; paramsが期待しているものと違うかチェック
+			    (error 'invalid-parameters :message "wrong zipcode"))
+			  (let ((address (mito:find-dao 'table :zipcode zipcode)))
+			    (unless address ; DBに情報が登録されているかチェック
+			      (error 'not-found))
+			    (dao->plist address)))))
+(define-condition invalid-parameters (error) ((message :initarg :message :reader message-of)))
+(define-condition not-found (error) ())
