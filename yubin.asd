@@ -7,7 +7,8 @@
 	       "clack"
 	       "fare-csv"
 	       "mito"
-	       "dexador")
+	       "dexador"
+	       "cl-ppcre")
   :components ((:module "src"
 		:components
 		((:file "main")
