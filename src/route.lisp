@@ -1,6 +1,9 @@
 (:defpackage #:route
   (:use #:cl)
-  (:import-from #:main #:*app*))
+  (:import-from #:cl-ppcre #:scan)
+  (:import-from #:main #:*app*)
+  (:export #:invalid-parameter
+	   #:not-found))
 (in-package #:route)
 
 (defmacro defroute (name (params &rest route-args) &body body)
@@ -32,19 +35,23 @@
        `(500 (:content-type "application/json")
              (,(jojo:to-json (list :|error| (format nil "~A" e))))))))
 
+(defroute "/zipcode/:zipcode" (params :method :POST)
+  (with-protect-to-json (let ((zipcode (asc :zipcode params)))
+			  (when (or (cl-ppcre:scan "[^0-9]" zipcode)
+				    (< (length zipcode) 6)
+				    (> (length zipcode) 7)) ; paramsが期待しているものと違うかチェック
+			    (error 'invalid-parameters :message "wrong zipcode"))
+			  (let ((address (mito:find-dao 'table :zipcode zipcode)))
+			    (unless address ; DBに情報が登録されていなければ
+			      (error 'not-found))
+			    (dao->plist address)))))
+
+(define-condition invalid-parameters (error) ((message :initarg :message :reader message-of)))
+(define-condition not-found (error) ())
+
+
 (defun asc (key alist)
   (cdr (assoc key alist :test #'string=)))
 
 (defroute "/zipcode/:zipcode" (params :method :POST)
-  (with-protect-to-json (let ((zipcode (asc :zipcode params)))
-			   (when (or (cl-ppcre:scan "[^0-9]" zipcode)
-				    (< (length zipcode) 6)
-				    (> (length zipcode) 7) ; paramsが期待しているものと違うかチェック
-			    (error 'invalid-parameters :message "wrong zipcode"))
-			  (let ((address (mito:find-dao 'table :zipcode zipcode)))
-			    (unless address ; DBに情報が登録されているかチェック
-			      (error 'not-found))
-			    (dao->plist address)))))
-	
-(define-condition invalid-parameters (error) ((message :initarg :message :reader message-of)))
-(define-condition not-found (error) ())
+  (with-protect-to-json (dao->plist (mito:find-dao 'table :zipcode (asc :zipcode params)))))
