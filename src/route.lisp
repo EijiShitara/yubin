@@ -45,5 +45,6 @@
 			    (unless address ; DBに情報が登録されているかチェック
 			      (error 'not-found))
 			    (dao->plist address)))))
+	
 (define-condition invalid-parameters (error) ((message :initarg :message :reader message-of)))
 (define-condition not-found (error) ())
