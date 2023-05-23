@@ -18,8 +18,12 @@
 
 
 (deftest test-target-2 ;; 異常系(not-found)の確認
-  (testing "(dex:post \"http://localhost:5000/zipcode/1234567\")) should return not-found"
-    (ok  (handler-case  (dex:post "http://localhost:5000/zipcode/1234567")
+  (testing "(dex:post \"http://localhost:5000/zipcode/1234567\") should return not-found"
+    (ok  (handler-case (dex:post "http://localhost:5000/zipcode/1234567")
+	   (error (not-found) t))))
+
+  (testing "(dex:post \"http://localhost:5000/zipcode/123456\") should return not-found"
+    (ok (handler-case (dex:post "http://localhost:5000/zipcode/123456")
 	   (error (not-found) t)))))
 
 
@@ -29,7 +33,10 @@
 	   (error (invalid-parameters) t))))
   (testing "(dex:post \"http://localhost:5000/zipcode/12345678\") should return invalid-parameters error" ;; 郵便番号の過剰桁数
     (ok  (handler-case  (dex:post "http://localhost:5000/zipcode/12345678")
-	   (error (invalid-parameters) t))))
+	   (error (invalid-parameters) t)))))
+
+
+(deftest test-target-4 ;; 異常系(invalid-parameters)の確認
   (testing "(dex:post \"http://localhost:5000/zipcode/abcdefg\") should return invalid-parameters error" ;; 数字以外の文字列が含まれた郵便番号
     (ok  (handler-case  (dex:post "http://localhost:5000/zipcode/abcdefg")
 	   (error (invalid-parameters) t))))
