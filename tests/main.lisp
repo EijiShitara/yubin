@@ -29,7 +29,7 @@
 
 (deftest test-target-3 ;; 異常系(invalid-parameters)の確認
   (testing "(dex:post \"http://localhost:5000/zipcode/12345\") should return invalid-parameters error" ;; 郵便番号の桁不足
-    (ok  (handler-case  (dex:post "http://localhost:5000/zipcode/12345")
+    (ok  (handler-case  (dex:post "http://localhost:5000/zipcode/1234")
 	   (error (invalid-parameters) t))))
   (testing "(dex:post \"http://localhost:5000/zipcode/12345678\") should return invalid-parameters error" ;; 郵便番号の過剰桁数
     (ok  (handler-case  (dex:post "http://localhost:5000/zipcode/12345678")
