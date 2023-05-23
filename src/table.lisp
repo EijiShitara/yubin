@@ -1,5 +1,6 @@
 (:defpackage #:table
-  (:use #:cl))
+  (:use #:cl
+	#:mito))
 (in-package #:table)
 
 ;; define table
