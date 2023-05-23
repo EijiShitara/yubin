@@ -40,6 +40,9 @@
   (testing "(dex:post \"http://localhost:5000/zipcode/abcdefg\") should return invalid-parameters error" ;; 数字以外の文字列が含まれた郵便番号
     (ok  (handler-case  (dex:post "http://localhost:5000/zipcode/abcdefg")
 	   (error (invalid-parameters) t))))
-  (testing "(dex:post \"http://localhost:5000/zipcode/640-941\") should return invalid-parameters error" ;; 数字以外の文字列が含まれた郵便番号
+  (testing "(dex:post \"http://localhost:5000/zipcode/640xxx\") should return invalid-parameters error" ;; 数字と数字以外の文字列が含まれた郵便番号
+    (ok  (handler-case  (dex:post "http://localhost:5000/zipcode/640xxx")
+	   (error (invalid-parameters) t))))
+  (testing "(dex:post \"http://localhost:5000/zipcode/640-941\") should return invalid-parameters error" ;; 数字と数字以外の文字列（ハイフン）が含まれた郵便番号
     (ok  (handler-case  (dex:post "http://localhost:5000/zipcode/640-941")
 	   (error (invalid-parameters) t)))))
