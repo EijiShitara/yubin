@@ -41,7 +41,7 @@
 (defroute "/zipcode/:zipcode" (params :method :POST)
   (with-protect-to-json (let ((zipcode (asc :zipcode params)))
 			  (when (or (cl-ppcre:scan "[^0-9]" zipcode)
-				    (< (length zipcode) 6)
+				    (< (length zipcode) 5)
 				    (> (length zipcode) 7)) ; paramsが期待しているものと違うかチェック
 			    (error 'invalid-parameters :message "wrong zipcode"))
 			  (let ((address (mito:find-dao 'table :zipcode zipcode)))
