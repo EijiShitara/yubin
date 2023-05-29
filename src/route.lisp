@@ -1,8 +1,9 @@
-(:defpackage #:route
+(defpackage #:route
   (:use #:cl
 	#:jonathan
 	#:clack
-	#:ningle)
+	#:ningle
+        #:table)
   (:import-from #:cl-ppcre #:scan)
   (:import-from #:main #:*app*)
   (:export #:invalid-parameter
@@ -16,13 +17,13 @@
            ,@body)))
 
 (defun dao->plist (dao)
-  (list :|郵便番号| (table-zipcode dao)
-        :|都道府県| (table-prefecture dao)
-        :|市区町村| (table-city dao)
-        :|町域| (table-town dao)
-        :|都道府県（読み）| (table-prefecture-yomi dao)
-	:|市区町村（読み）| (table-city-yomi dao)
-        :|町域（読み）| (table-town-yomi dao)))
+  (list :|郵便番号| (zipcode-address-zipcode dao)
+        :|都道府県| (zipcode-address-prefecture dao)
+        :|市区町村| (zipcode-address-city dao)
+        :|町域| (zipcode-address-town dao)
+        :|都道府県（読み）| (zipcode-address-prefecture-yomi dao)
+	:|市区町村（読み）| (zipcode-address-city-yomi dao)
+        :|町域（読み）| (zipcode-address-town-yomi dao)))
 
 (defmacro with-protect-to-json (&body body)
   `(handler-case
@@ -44,7 +45,7 @@
 				    (< (length zipcode) 5)
 				    (> (length zipcode) 7)) ; paramsが期待しているものと違うかチェック
 			    (error 'invalid-parameters :message "wrong zipcode"))
-			  (let ((address (mito:find-dao 'table :zipcode zipcode)))
+			  (let ((address (mito:find-dao 'zipcode-address :zipcode zipcode)))
 			    (unless address ; DBに情報が登録されていなければ
 			      (error 'not-found))
 			    (dao->plist address)))))
@@ -57,5 +58,4 @@
   (cdr (assoc key alist :test #'string=)))
 
 (defroute "/zipcode/:zipcode" (params :method :POST)
-  (with-protect-to-json (dao->plist (mito:find-dao 'table :zipcode (asc :zipcode params)))))
-
+  (with-protect-to-json (dao->plist (mito:find-dao 'zipcode-address :zipcode (asc :zipcode params)))))

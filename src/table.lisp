@@ -1,6 +1,15 @@
-(:defpackage #:table
+(defpackage #:table
   (:use #:cl
-	#:mito))
+	#:mito)
+  (:export #:zipcode-address
+           #:zipcode-address-zipcode
+           #:zipcode-address-prefecture
+           #:zipcode-address-city
+           #:zipcode-address-town
+           #:zipcode-address-prefecture-yomi
+           #:zipcode-address-city-yomi
+           #:zipcode-address-town-yomi
+           #:create-all-table))
 (in-package #:table)
 
 ;; define table
@@ -19,7 +28,7 @@
        column-type-pairs)
      (:metaclass mito:dao-table-class)))
 
-(deftable table ()
+(deftable zipcode-address ()
   (zipcode :integer) ;; 郵便番号
   (prefecture :text) ;; 都道府県
   (city :text) ;; 市区町村
@@ -29,10 +38,8 @@
   (town-yomi :text)) ;; 町域（読み）
 
 (defparameter *table-list*
-  '(table))
+  '(zipcode-address))
 
 (defun create-all-table ()
   (dolist (table *table-list*)
     (mito:execute-sql (car (mito:table-definition table)))))
-
-(create-all-table)
