@@ -13,7 +13,7 @@
 (defun register-data ()
   (connect-db)
 
-  (mito:execute-sql "DROP TABLE IF EXISTS example;")
+  (mito:execute-sql "DROP TABLE IF EXISTS zipcode_address;")
 
   (create-all-table)
 
