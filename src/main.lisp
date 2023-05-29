@@ -23,12 +23,5 @@
 (defun stop () (clack:stop *handler*))
 
 ;; connect to database
-(defun connect-db ()
-  (mito:connect-toplevel :postgres :database-name "example" :username "eijishitara"))
-
-
-*app*
-
-(start)
-
-(connect-db)
+(defun connect-db (&key (database-name "example") (username "eijishitara"))
+  (mito:connect-toplevel :postgres :database-name database-name :username username))

@@ -13,8 +13,9 @@
 		:components
 		((:file "main")
                  (:file "table")
-                 (:file "route")
-                 (:file "insert-data"))))
+                 (:file "route" :depends-on ("table"))
+                 (:file "insert-data")
+                 (:file "seed" :depends-on ("insert-data")))))
   :description "App to search an address from zipcode"
   :in-order-to ((test-op (test-op "yubin/tests"))))
 
